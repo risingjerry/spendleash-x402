@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { CodeTabs } from "@/components/landing/CodeTabs";
 import { FeedList } from "@/components/landing/FeedList";
-import { HeroCode } from "@/components/landing/HeroCode";
 import { LiveDemo } from "@/components/landing/LiveDemo";
-import { Orbit } from "@/components/landing/Orbit";
+import { HeroVisual } from "@/components/landing/HeroVisual";
 import { Ticker } from "@/components/landing/Ticker";
 import { LogoMark } from "@/components/Logo";
 import { repoUrl } from "@/lib/env";
@@ -53,19 +52,24 @@ export default function Home() {
       <section className="hero">
         <div className="glow-field glow-a" aria-hidden="true" />
         <div className="glow-field glow-b" aria-hidden="true" />
-        <HeroCode />
+        <HeroVisual />
         <div className="shell">
           <div className="hero-grid">
             <div>
-              <a className="eyebrow" href="#demo" style={{ textDecoration: "none" }} data-reveal="0">
-                x402 payments for AI agents · QDay Aevum <span aria-hidden="true">›</span>
+              <a className="eyebrow chip" href="#demo" data-reveal="0">
+                <span className="chip-dot" />
+                <span data-scramble>Agent payments · enforced on-chain</span>
+                <span aria-hidden="true">›</span>
               </a>
               <h1 data-reveal="80">
-                Give your agent a budget, <span className="soft">not your wallet.</span>
+                Give your agent a budget,{" "}
+                <span className="soft glitch" data-text="not your wallet.">
+                  not your wallet.
+                </span>
               </h1>
               <p className="hero-sub" data-reveal="160">
-                SpendLeash lets AI agents pay for APIs per request in tUSD8, inside limits a smart contract enforces. A prompt injection can make your agent
-                sign. It can&apos;t make the payment settle.
+                Your agent pays for APIs on its own, per request, in tUSD8. The limits live in a smart contract, so a prompt injection can make it sign, but
+                never makes the payment settle.
               </p>
               <div className="hero-cta" data-reveal="240">
                 <a className="btn" href="#demo">
@@ -75,14 +79,20 @@ export default function Home() {
                   Open console
                 </Link>
               </div>
-              <div className="hero-meta" data-reveal="320">
-                <span>Live on Aevum testnet</span>
-                <span>Agent needs 0 gas</span>
-                <span>MIT · open source</span>
-              </div>
-            </div>
-            <div data-reveal="200">
-              <Orbit />
+              <dl className="hero-stats" data-reveal="320">
+                <div>
+                  <dt>Caps</dt>
+                  <dd>per call · day · lifetime</dd>
+                </div>
+                <div>
+                  <dt>Agent gas</dt>
+                  <dd>zero</dd>
+                </div>
+                <div>
+                  <dt>Kill switch</dt>
+                  <dd>next block</dd>
+                </div>
+              </dl>
             </div>
           </div>
         </div>
@@ -96,8 +106,9 @@ export default function Home() {
           <div className="section-head">
             <div>
               <span className="eyebrow" data-reveal>
+                <span className="eb-no">01</span>
                 <span className="bar" />
-                Live demo · real transactions
+                <span data-scramble>Live demo · real transactions</span>
               </span>
               <h2 className="section-title" data-reveal="80">
                 Watch an agent hit its leash.
@@ -120,8 +131,9 @@ export default function Home() {
           <div className="section-head">
             <div>
               <span className="eyebrow" data-reveal>
+                <span className="eb-no">02</span>
                 <span className="bar" />
-                How it works
+                <span data-scramble>How it works</span>
               </span>
               <h2 className="section-title" data-reveal="80">
                 Limits that live where the agent can&apos;t reach them.
@@ -133,7 +145,7 @@ export default function Home() {
           </div>
           <div className="steps-grid">
             {STEPS.map((s, i) => (
-              <article className="card hover step-card" key={s.no} data-reveal={i * 90}>
+              <article className="card hover step-card spot" key={s.no} data-reveal={i * 90}>
                 <span className="step-no">{s.no}</span>
                 <h3>{s.title}</h3>
                 <p>{s.body}</p>
@@ -150,8 +162,9 @@ export default function Home() {
           <div className="section-head">
             <div>
               <span className="eyebrow" data-reveal>
+                <span className="eb-no">03</span>
                 <span className="bar" />
-                Safety model
+                <span data-scramble>Safety model</span>
               </span>
               <h2 className="section-title" data-reveal="80">
                 Six ways agents lose money. Six reverts.
@@ -160,7 +173,7 @@ export default function Home() {
           </div>
           <div className="threats" data-reveal="100">
             {THREATS.map((t) => (
-              <div className="threat" key={t.code}>
+              <div className="threat spot" key={t.code}>
                 <div className="t-head">
                   <span className="t-label">{t.label}</span>
                   <span className="t-code mono">{t.code}</span>
@@ -179,8 +192,9 @@ export default function Home() {
           <div className="section-head">
             <div>
               <span className="eyebrow" data-reveal>
+                <span className="eb-no">04</span>
                 <span className="bar" />
-                On-chain, right now
+                <span data-scramble>On-chain, right now</span>
               </span>
               <h2 className="section-title" data-reveal="80">
                 Every leash, payment and revoke. Public.
@@ -205,8 +219,9 @@ export default function Home() {
         <div className="shell dev-grid">
           <div>
             <span className="eyebrow" data-reveal>
+              <span className="eb-no">05</span>
               <span className="bar" />
-              For developers
+              <span data-scramble>For developers</span>
             </span>
             <h2 className="section-title" data-reveal="80">
               One line to charge agents. One line to pay.
@@ -233,7 +248,7 @@ export default function Home() {
       {/* ───────────── doors ───────────── */}
       <section className="section" style={{ paddingTop: 24 }}>
         <div className="shell doors">
-          <Link className="door" href="/console" data-reveal>
+          <Link className="door spot" href="/console" data-reveal>
             <div>
               <span className="d-eyebrow">For agent owners</span>
               <h3>Put your agent on a leash.</h3>
@@ -244,7 +259,7 @@ export default function Home() {
               <span className="d-arrow" aria-hidden="true">→</span>
             </div>
           </Link>
-          <a className="door" href={repoUrl} target="_blank" rel="noreferrer" data-reveal="100">
+          <a className="door spot" href={repoUrl} target="_blank" rel="noreferrer" data-reveal="100">
             <div>
               <span className="d-eyebrow">For API merchants</span>
               <h3>Get paid by agents, per request.</h3>

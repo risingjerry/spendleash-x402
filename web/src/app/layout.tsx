@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { Header } from "@/components/Header";
+import { Fx } from "@/components/Fx";
 import { Reveal } from "@/components/Reveal";
 import { Providers } from "./providers";
 import "./globals.css";
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <Header />
           {children}
           <Reveal />
+          <Fx />
         </Providers>
       </body>
     </html>
