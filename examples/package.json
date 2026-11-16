@@ -9,12 +9,15 @@
     "pay-gasless": "tsx --env-file-if-exists=.env src/pay-gasless.ts",
     "read-payments": "tsx --env-file-if-exists=.env src/read-payments.ts",
     "typecheck": "tsc --noEmit",
-    "leash-demo": "tsx --env-file-if-exists=.env src/leash-demo.ts"
+    "leash-demo": "tsx --env-file-if-exists=.env src/leash-demo.ts",
+    "smart-agent": "tsx --env-file-if-exists=.env src/smart-agent.ts"
   },
   "dependencies": {
     "@aevum-kit/aevum": "workspace:*",
-    "viem": "2.57.12",
-    "@spendleash/sdk": "workspace:*"
+    "@spendleash/sdk": "workspace:*",
+    "@zerodev/ecdsa-validator": "5.4.9",
+    "@zerodev/sdk": "5.5.11",
+    "viem": "2.57.12"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
