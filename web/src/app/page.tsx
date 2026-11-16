@@ -118,6 +118,9 @@ export default function Home() {
                 Aevum testnet, right now, with links to every transaction.
               </p>
             </div>
+            <a className="btn line" href="/demo.mp4" target="_blank" rel="noreferrer" data-reveal="200">
+              ▶ 2-min video walkthrough
+            </a>
           </div>
           <div data-reveal="120">
             <LiveDemo />

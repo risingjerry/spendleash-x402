@@ -4,7 +4,7 @@
 
 Built for the [Aevum Builder Challenge #1](https://dorahacks.io/hackathon/qday/detail). Live on Aevum testnet (chain `44005`).
 
-**▶ Live site: [spendleash.vercel.app](https://spendleash.vercel.app)**: press *Run live on Aevum* to watch an agent pay, get prompt-injected, hit its caps and get revoked, with real transactions and no wallet needed.
+**▶ Live site: [spendleash.vercel.app](https://spendleash.vercel.app)** · **🎬 [2-min demo video](https://spendleash.vercel.app/demo.mp4)**: press *Run live on Aevum* to watch an agent pay, get prompt-injected, hit its caps and get revoked, with real transactions and no wallet needed.
 
 ```text
 ✓ Paid API call 1: HTTP 200, paid 0.05 tUSD8
@@ -209,7 +209,7 @@ The agent doesn't have to be a plain key. [`examples/src/smart-agent.ts`](exampl
 Two things we found on Aevum while building this, useful for other builders:
 
 - The testnet bundler is live at `https://bundler.qday.info` (chain `0xabe5` = 44005) even though the docs still say the endpoint "will be published".
-- `KernelFactory` v3.1 (`0xaac5…E419`) is deployed but **not staked** in the EntryPoint, and ZeroDev's meta-factory isn't deployed. Bundlers therefore reject UserOperations whose `initCode` deploys a Kernel account (ERC-7562: *"Factory must be staked"*). Workaround used here: deploy the account with a direct factory call, then send UserOperations without `initCode`.
+- `KernelFactory` v3.1 (`0xaac5…E419`) is deployed but **not staked** in the EntryPoint, and ZeroDev's meta-factory isn't deployed. Bundlers therefore reject UserOperations whose `initCode` deploys a Kernel account (ERC-7562: *"Factory must be staked"*). Workaround used here: deploy the account with a direct factory call, then send UserOperations without `initCode`. Reported upstream: [qday-io/aevum-starter-kit#1](https://github.com/qday-io/aevum-starter-kit/issues/1).
 
 ## Security model
 
