@@ -8,7 +8,8 @@
     "check-setup": "tsx --env-file-if-exists=.env src/check-setup.ts",
     "pay-gasless": "tsx --env-file-if-exists=.env src/pay-gasless.ts",
     "read-payments": "tsx --env-file-if-exists=.env src/read-payments.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "leash-demo": "tsx --env-file-if-exists=.env src/leash-demo.ts"
   },
   "dependencies": {
     "@aevum-kit/aevum": "workspace:*",
