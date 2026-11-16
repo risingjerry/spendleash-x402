@@ -323,6 +323,7 @@ pre.code .c { color: var(--text-4); } pre.code .k { color: var(--accent); } pre.
 textarea.field { resize: vertical; }
 .inline-form { display: flex; gap: 8px; }
 .inline-form .field { flex: 1 1 auto; min-width: 0; }
+.inline-form .btn { flex: 0 0 auto; padding: 0 16px; }
 .form { display: flex; flex-direction: column; }
 .form .btn.block { margin-top: 18px; }
 .limits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }

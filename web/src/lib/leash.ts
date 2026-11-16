@@ -51,6 +51,7 @@ export function spentTodayNow(s: SessionView, lastPaymentDay: number | undefined
 
 const POLL_MS = 5_000;
 const EXPLORER_API = "https://explorer-test.qday.info/api";
+const RECENT_BLOCKS = 300n;
 
 interface ExplorerLog {
   topics: (Hex | null)[];
@@ -95,12 +96,20 @@ export function useOwnerLeash(owner?: Address) {
           }
           const res = await fetch(`${EXPLORER_API}?${q}`);
           const body = (await res.json()) as { status: string; result: ExplorerLog[] | null };
-          return (body.result ?? []).map((l) => {
+          const indexed = (body.result ?? []).map((l) => {
             const block = BigInt(l.blockNumber);
             known.set(block, Number(l.timeStamp));
             const d = decodeEventLog({ abi: [event], topics: l.topics.filter(Boolean) as [Hex, ...Hex[]], data: l.data });
             return { args: d.args as Record<string, unknown>, blockNumber: block, transactionHash: l.transactionHash };
           });
+          // The explorer indexes a few seconds behind the chain: read the newest blocks straight from RPC too.
+          const tipFrom = head > RECENT_BLOCKS ? head - RECENT_BLOCKS : 0n;
+          const tip = await client!.getLogs({ address: leash!, event, args: owner ? { owner } : undefined, fromBlock: tipFrom > from ? tipFrom : from, toBlock: head } as never);
+          const seen = new Set(indexed.map((l) => `${l.transactionHash}:${String(l.args.sessionId)}`));
+          for (const l of tip as unknown as { args: Record<string, unknown>; blockNumber: bigint; transactionHash: Hash }[]) {
+            if (!seen.has(`${l.transactionHash}:${String(l.args.sessionId)}`)) indexed.push({ args: l.args, blockNumber: l.blockNumber, transactionHash: l.transactionHash });
+          }
+          return indexed;
         }
         const raw = await getLogsChunked(client!, { address: leash!, event, args: owner ? { owner } : undefined, fromBlock: from, toBlock: head });
         return raw.map((l) => ({ args: l.args as Record<string, unknown>, blockNumber: l.blockNumber!, transactionHash: l.transactionHash! }));
