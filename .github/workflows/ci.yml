@@ -40,4 +40,6 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r typecheck
+      - name: SDK tests
+        run: pnpm --filter @spendleash/sdk test
       - run: pnpm build
