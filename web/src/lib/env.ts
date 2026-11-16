@@ -12,6 +12,10 @@ export interface Network {
   checkout?: Address;
   /** Only scan events from this block onward on the Activity page. */
   deployBlock?: bigint;
+  /** SpendLeash on this network. */
+  leash?: Address;
+  /** Block SpendLeash was deployed in; event scans start here. */
+  leashDeployBlock?: bigint;
   /** Explorer links only make sense on the real testnet. */
   hasExplorer: boolean;
 }
@@ -27,6 +31,8 @@ const all: Record<NetworkKey, Network> = {
     chain: aevumTestnet,
     checkout: address(process.env.NEXT_PUBLIC_CHECKOUT_AEVUM),
     deployBlock: block(process.env.NEXT_PUBLIC_DEPLOY_BLOCK_AEVUM),
+    leash: address(process.env.NEXT_PUBLIC_LEASH_AEVUM),
+    leashDeployBlock: block(process.env.NEXT_PUBLIC_LEASH_DEPLOY_BLOCK_AEVUM),
     hasExplorer: true,
   },
   fork: {
@@ -35,6 +41,8 @@ const all: Record<NetworkKey, Network> = {
     chain: aevumFork,
     checkout: address(process.env.NEXT_PUBLIC_CHECKOUT_FORK),
     deployBlock: block(process.env.NEXT_PUBLIC_DEPLOY_BLOCK_FORK),
+    leash: address(process.env.NEXT_PUBLIC_LEASH_FORK),
+    leashDeployBlock: block(process.env.NEXT_PUBLIC_LEASH_DEPLOY_BLOCK_FORK),
     hasExplorer: false,
   },
   local: {
@@ -43,6 +51,8 @@ const all: Record<NetworkKey, Network> = {
     chain: localAnvil,
     checkout: address(process.env.NEXT_PUBLIC_CHECKOUT_LOCAL),
     deployBlock: undefined,
+    leash: address(process.env.NEXT_PUBLIC_LEASH_LOCAL),
+    leashDeployBlock: block(process.env.NEXT_PUBLIC_LEASH_DEPLOY_BLOCK_LOCAL),
     hasExplorer: false,
   },
 };
