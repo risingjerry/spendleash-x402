@@ -1,0 +1,21 @@
+{
+  "name": "@spendleash/sdk",
+  "version": "0.1.0",
+  "description": "SpendLeash EIP-712 payments, x402 merchant paywalls and agent fetch client",
+  "license": "MIT",
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "gen-abi": "node scripts/gen-abi.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "peerDependencies": { "viem": "^2.57.0" },
+  "dependencies": { "@aevum-kit/aevum": "workspace:*" },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "viem": "2.57.12"
+  }
+}

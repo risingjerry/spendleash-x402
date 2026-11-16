@@ -23,5 +23,8 @@
     "onlyBuiltDependencies": [
       "esbuild"
     ]
+  },
+  "devDependencies": {
+    "@spendleash/sdk": "workspace:*"
   }
 }

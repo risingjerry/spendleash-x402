@@ -10,13 +10,20 @@ overrides:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      '@spendleash/sdk':
+        specifier: workspace:*
+        version: link:packages/leash
 
   examples:
     dependencies:
       '@aevum-kit/aevum':
         specifier: workspace:*
         version: link:../packages/aevum
+      '@spendleash/sdk':
+        specifier: workspace:*
+        version: link:../packages/leash
       viem:
         specifier: 2.57.12
         version: 2.57.12(bufferutil@4.2.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.6.7)
@@ -35,6 +42,25 @@ importers:
     dependencies:
       viem:
         specifier: ^2.57.0
+        version: 2.57.12(bufferutil@4.2.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.6.7)
+
+  packages/leash:
+    dependencies:
+      '@aevum-kit/aevum':
+        specifier: workspace:*
+        version: link:../aevum
+    devDependencies:
+      '@types/node':
+        specifier: ^22.10.0
+        version: 22.20.5
+      tsx:
+        specifier: 4.23.15
+        version: 4.23.15
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      viem:
+        specifier: 2.57.12
         version: 2.57.12(bufferutil@4.2.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.6.7)
 
   web:

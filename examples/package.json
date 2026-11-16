@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@aevum-kit/aevum": "workspace:*",
-    "viem": "2.57.12"
+    "viem": "2.57.12",
+    "@spendleash/sdk": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
