@@ -188,6 +188,29 @@ One recorded run (session `0xa888…f8a0`):
 
 Refused payments never reach the chain as failed transactions: the facilitator's `check()`/simulation stops them first, so nobody wastes gas. The demo also signs the attacker payment and simulates `pay()` directly, without going through any server, to show the contract itself rejects it.
 
+## Smart-account agents (Kernel v3.1 + QDay's bundler)
+
+The agent doesn't have to be a plain key. [`examples/src/smart-agent.ts`](examples/src/smart-agent.ts) makes it an **ERC-4337 Kernel v3.1 account** whose root validator is the agent's session key, and runs it against QDay's bundler (`https://bundler.qday.info`, EntryPoint v0.7) on Aevum:
+
+- The owner opens a leash for the **smart-account address**.
+- **x402 path:** the account signs a `PaymentIntent`; SpendLeash verifies it through **ERC-1271** (`SignatureChecker`) and the merchant's relayer settles it.
+- **UserOperation path:** the account settles a payment **itself**, as a UserOperation through the bundler.
+- An injected UserOperation that pays an attacker is refused in the bundler's simulation, so it never reaches a block. The leash's caps apply to the smart account exactly as to a key.
+
+| Step (Aevum testnet) | Transaction |
+|---|---|
+| Kernel v3.1 account `0x80C7…A532` deployed via KernelFactory v3.1 | [`0x33b1…168a`](https://explorer-test.qday.info/tx/0x33b13ac7433d9c96b6849aa4f97a421d3bbb54af5da1052a4aa52d988ab2168a) |
+| Owner opens a leash for the smart account | [`0x29af…d54b`](https://explorer-test.qday.info/tx/0x29af20298ff4ab18ba00d01072e0761214ccb663831e93216dedb9bb463bd54b) |
+| x402: ERC-1271 signature, relayer settles 0.05 tUSD8 | [`0xf526…1a9f`](https://explorer-test.qday.info/tx/0xf526c98388911047e4b54e462b3a85319bc47aae891e80cfb4177cfb4d421a9f) |
+| UserOperation: the account pays 0.05 tUSD8 itself via the bundler | [`0xd114…36c4`](https://explorer-test.qday.info/tx/0xd114d1e316465058f3c659beb8339f2d2a41ae2013fd39b85f1147999aa236c4) |
+| Injected UserOperation to an attacker | refused in bundler simulation (`MerchantNotAllowed`) |
+| Third payment of the day | refused (`DailyCapExceeded`) |
+
+Two things we found on Aevum while building this, useful for other builders:
+
+- The testnet bundler is live at `https://bundler.qday.info` (chain `0xabe5` = 44005) even though the docs still say the endpoint "will be published".
+- `KernelFactory` v3.1 (`0xaac5…E419`) is deployed but **not staked** in the EntryPoint, and ZeroDev's meta-factory isn't deployed. Bundlers therefore reject UserOperations whose `initCode` deploys a Kernel account (ERC-7562: *"Factory must be staked"*). Workaround used here: deploy the account with a direct factory call, then send UserOperations without `initCode`.
+
 ## Security model
 
 | Threat | What stops it |
@@ -204,7 +227,7 @@ Design notes:
 
 - `check()` and `pay()` share one validation function, so the dry-run can't drift from settlement. Tests assert they agree on every failure case.
 - The contract never decides prices. The merchant's paywall checks that `amount ≥ price`, the payee, and the request binding (`ref = keccak256(method, url, X-Request-Id)`).
-- Agent signatures go through OpenZeppelin `SignatureChecker`, so an agent can be an ERC-4337 smart account (ERC-1271), not just an EOA.
+- Agent signatures go through OpenZeppelin `SignatureChecker`, so an agent can be an ERC-4337 smart account (ERC-1271), not just an EOA. This is verified on Aevum with Kernel v3.1 (see above).
 - Compiled for **Shanghai** (Aevum's EVM); the build fails if a Cancun-only opcode slips in.
 
 ## How it uses the QDay stack
@@ -212,7 +235,8 @@ Design notes:
 - **tUSD8** on Aevum testnet as the settlement asset; owners can deposit with EIP-2612 `permit` in one transaction (`depositWithPermit`).
 - **x402-style HTTP 402** flow with a custom `leash` scheme on the `qday-aevum-testnet` network (`X-PAYMENT` / `X-PAYMENT-RESPONSE` headers, base64 JSON).
 - **Gas abstraction:** the agent never holds tQDAY; the merchant's relayer pays gas.
-- **Session keys, spending caps, expiry, contract allowlist:** the same agent-wallet primitives the QDay whitepaper describes, implemented as a standalone contract that works today.
+- **Smart accounts:** Kernel v3.1 agents through QDay's ERC-4337 bundler (EntryPoint v0.7), with ERC-1271 signatures and self-paid UserOperations.
+- **Session keys, spending caps, expiry, contract allowlist:** the same agent-wallet primitives the QDay whitepaper describes, enforced by a contract any account type can use.
 - Aevum specifics handled: 1,000-block `eth_getLogs` limit (chunked reads), no WebSocket RPC (HTTPS polling), legacy transactions.
 
 ## Known limits and roadmap
@@ -221,7 +245,7 @@ Design notes:
 - The paywall's in-flight de-duplication lives in memory. Multi-instance merchants need a shared store (Redis); the on-chain nonce is still the final replay guard.
 - x402 settles before delivery. If the merchant's handler fails after payment, the agent keeps the receipt (`X-PAYMENT-RESPONSE`), but a refund policy is the merchant's job.
 - Roadmap:
-  1. A Kernel v3.1 / ERC-4337 session-key validator that enforces the same leash inside the owner's smart account, once Aevum's testnet bundler endpoint is published.
+  1. A Kernel v3.1 permission/policy module that enforces the same leash inside the *owner's* smart account (no deposit step), now that the bundler is live.
   2. ERC-8004 agent identity on each leash, so merchants can see which agent is paying.
   3. Paymaster integration so even the merchant's relayer pays gas in USD8.
   4. Owner alerts (spend at 80% of a cap) and an MCP server so any agent framework can use a leash.

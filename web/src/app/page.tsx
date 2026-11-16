@@ -229,7 +229,7 @@ export default function Home() {
             <ul className="bullets" data-reveal="160">
               <li>x402-style HTTP 402 flow, settled on QDay Aevum in tUSD8.</li>
               <li>check() returns the exact revert reason for free, so failed payments never cost gas.</li>
-              <li>Agents can be EOAs or ERC-4337 smart accounts (ERC-1271 signatures).</li>
+              <li>Agents can be keys or Kernel v3.1 smart accounts. Verified on Aevum through QDay&apos;s ERC-4337 bundler.</li>
               <li>Plain-language errors for every revert, ready to show a user.</li>
               <li>17 contract tests incl. a 256-run fuzz that no sequence of payments beats a cap.</li>
             </ul>
