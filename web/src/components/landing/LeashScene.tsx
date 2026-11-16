@@ -334,8 +334,8 @@ export function LeashScene({ onEvent }: { onEvent?: (e: SceneEvent) => void }) {
       camera.aspect = w / h;
       // keep the cage on the right on wide screens, centered on narrow ones
       const wide = w > 980;
-      camera.setViewOffset(w, h, wide ? -w * 0.2 : 0, wide ? 0 : -h * 0.04, w, h);
-      camera.position.z = wide ? 9.2 : 10.8;
+      camera.setViewOffset(w, h, wide ? -w * 0.2 : 0, wide ? 0 : h * 0.2, w, h);
+      camera.position.z = wide ? 9.2 : 12.5;
       camera.updateProjectionMatrix();
     }
     resize();

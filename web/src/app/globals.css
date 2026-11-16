@@ -84,7 +84,7 @@ code, .mono { font-family: var(--font-mono); }
 /* ---------- layout ---------- */
 .shell { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 32px; }
 @media (max-width: 640px) { .shell { padding: 0 16px; } }
-main { position: relative; }
+main { position: relative; overflow-x: clip; }
 .section { padding: 112px 0; position: relative; }
 @media (max-width: 760px) { .section { padding: 72px 0; } }
 .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
@@ -301,7 +301,7 @@ pre.code .c { color: var(--text-4); } pre.code .k { color: var(--accent); } pre.
 
 /* ---------- console ---------- */
 .page { padding-top: calc(var(--header-h) + 48px); padding-bottom: 96px; display: flex; flex-direction: column; gap: 28px; position: relative; }
-.page-glow { position: absolute; top: -120px; right: -10%; width: 760px; height: 520px; pointer-events: none; background: radial-gradient(closest-side, rgba(var(--glow-violet), 0.22), rgba(var(--glow-indigo), 0.08) 60%, transparent); filter: blur(30px); z-index: -1; }
+.page-glow { position: absolute; top: -120px; right: 0; width: min(760px, 90vw); height: 520px; pointer-events: none; background: radial-gradient(closest-side, rgba(var(--glow-violet), 0.22), rgba(var(--glow-indigo), 0.08) 60%, transparent); filter: blur(30px); z-index: -1; }
 .page-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; }
 .page-head h1 { font-size: clamp(36px, 5vw, 60px); line-height: 1.02; letter-spacing: -0.04em; margin-top: 16px; max-width: 16ch; }
 .lede { margin-top: 16px; color: var(--text-2); font-size: 15px; max-width: 64ch; }
@@ -394,7 +394,6 @@ table.data a { color: var(--accent); text-decoration: none; }
 
 /* HUD */
 .hud { position: absolute; z-index: 3; top: calc(var(--header-h) + 28px); bottom: 84px; right: 40px; width: min(46vw, 640px); pointer-events: none; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-3); }
-@media (max-width: 980px) { .hud { left: 16px; right: 16px; width: auto; bottom: auto; height: 46vh; } .hud-readouts, .hud-legend { display: none; } }
 .hud-corner { position: absolute; width: 22px; height: 22px; border-color: rgba(63, 243, 255, 0.55); border-style: solid; border-width: 0; }
 .hud-corner.tl { top: 0; left: 0; border-top-width: 1px; border-left-width: 1px; }
 .hud-corner.tr { top: 0; right: 0; border-top-width: 1px; border-right-width: 1px; }
@@ -429,7 +428,7 @@ table.data a { color: var(--accent); text-decoration: none; }
 .hero-stats > div:last-child { border-right: 0; margin-right: 0; }
 .hero-stats dt { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-4); }
 .hero-stats dd { margin: 6px 0 0; font-size: 13px; color: var(--text); }
-@media (max-width: 560px) { .hero-stats { grid-template-columns: 1fr 1fr; row-gap: 14px; } .hero-stats > div:nth-child(2) { border-right: 0; } }
+@media (max-width: 560px) { .hero-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); } .hero-stats > div { padding-right: 10px; margin-right: 10px; } .hero-stats dd { font-size: 12px; } }
 
 /* glitch headline accent */
 .glitch { position: relative; display: inline-block; }
@@ -513,4 +512,19 @@ pre.code .f { color: var(--cyan); }
 @media (prefers-reduced-motion: reduce) {
   .glitch::before, .glitch::after, .blip, .chip-dot { animation: none !important; }
   .btn::after { display: none; }
+}
+
+/* phones / tablets: scene sits behind the top of the hero, HUD reduced to its frame */
+@media (max-width: 980px) {
+  .hud { left: 16px; right: 16px; width: auto; top: calc(var(--header-h) + 12px); bottom: auto; height: 42vh; }
+  .hud-readouts, .hud-legend, .hud-dim { display: none; }
+  .hero { min-height: 100svh; padding-top: calc(var(--header-h) + 38vh); }
+  .eyebrow.chip { font-size: 11px; letter-spacing: 0.1em; white-space: nowrap; }
+}
+
+@media (max-width: 520px) {
+  .brand-name { display: none; }
+  .topbar .icon-btn { display: none; }
+  .topbar-end { gap: 6px; }
+  .score { align-items: flex-start; }
 }

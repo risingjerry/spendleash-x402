@@ -82,7 +82,7 @@ export default function Home() {
               <dl className="hero-stats" data-reveal="320">
                 <div>
                   <dt>Caps</dt>
-                  <dd>per call · day · lifetime</dd>
+                  <dd>call · day · total</dd>
                 </div>
                 <div>
                   <dt>Agent gas</dt>
