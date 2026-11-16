@@ -4,6 +4,8 @@
 
 Built for the [Aevum Builder Challenge #1](https://dorahacks.io/hackathon/qday/detail). Live on Aevum testnet (chain `44005`).
 
+**▶ Live site: [spendleash.vercel.app](https://spendleash.vercel.app)**: press *Run live on Aevum* to watch an agent pay, get prompt-injected, hit its caps and get revoked, with real transactions and no wallet needed.
+
 ```text
 ✓ Paid API call 1: HTTP 200, paid 0.05 tUSD8
 ✓ Paid API call 2: HTTP 200, paid 0.05 tUSD8
@@ -68,7 +70,7 @@ sequenceDiagram
 | Contract | [`contracts/src/SpendLeash.sol`](contracts/src/SpendLeash.sol) | Deposits, sessions, caps, allowlist, revoke, `pay()` and the `check()` dry-run. Accepts EOA and ERC-1271 (smart-account) agent signatures. |
 | Contract tests | [`contracts/test/SpendLeash.t.sol`](contracts/test/SpendLeash.t.sol) | 17 tests, including a 256-run fuzz test that no sequence of payments ever exceeds a cap. |
 | SDK | [`packages/leash`](packages/leash) (`@spendleash/sdk`) | `createPaywall()`: x402 merchant middleware on Web `Request`/`Response` (Next.js, Node, Bun…). `createLeashFetch()`: a drop-in `fetch` for agents that pays 402s. Owner helpers, typed ABI, plain-language errors. |
-| Owner console | [`web/`](web) | Next.js app: fund the budget, create a leash, live spend meters, two-step revoke, on-chain payment feed. |
+| Web app | [`web/`](web) | Landing page with a one-click **live demo** (`/api/demo` runs the full story on Aevum and streams it), a public on-chain feed (`/api/feed`), and the owner **console** (`/console`): fund the budget, create a leash, live spend meters, two-step revoke. |
 | End-to-end demo | [`examples/src/leash-demo.ts`](examples/src/leash-demo.ts) | The scripted run above: real HTTP servers, real 402s, real settlement. |
 
 ## Try it in 5 minutes (no funds needed)
@@ -243,6 +245,6 @@ Yes. Signatures are verified with ERC-1271 when the agent address is a contract.
 
 ## Credits and license
 
-MIT. See [LICENSE](LICENSE). Based on the [Aevum Starter Kit](https://github.com/qday-io/aevum-starter-kit) (MIT, PQA Labs). Its original README is in [`docs/starter-kit.md`](docs/starter-kit.md), and third-party licenses are in [NOTICE.md](NOTICE.md). Everything SpendLeash-specific (`contracts/src/SpendLeash.sol`, `packages/leash`, the console in `web/src/app/page.tsx` and `web/src/lib/leash.ts`, `examples/src/leash-demo.ts`) was written during the Builder Challenge build window, starting 16 Nov 2026.
+MIT. See [LICENSE](LICENSE). Based on the [Aevum Starter Kit](https://github.com/qday-io/aevum-starter-kit) (MIT, PQA Labs). Its original README is in [`docs/starter-kit.md`](docs/starter-kit.md), and third-party licenses are in [NOTICE.md](NOTICE.md). Everything SpendLeash-specific (`contracts/src/SpendLeash.sol`, `packages/leash`, the web app in `web/src` (landing, `/console`, `/api/demo`, `/api/feed`), `examples/src/leash-demo.ts`) was written during the Builder Challenge build window, starting 16 Nov 2026.
 
 If this helped you think about agent payments, a ⭐ helps others find it.

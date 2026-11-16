@@ -8,13 +8,13 @@ import { WagmiProvider } from "wagmi";
 import { NetworkProvider, useNetwork } from "@/lib/network";
 import { wagmiConfig } from "@/lib/wagmi";
 
-const theme = darkTheme({ accentColor: "#0257FF", borderRadius: "medium" });
+const theme = darkTheme({ accentColor: "#ffffff", accentColorForeground: "#000000", borderRadius: "small", fontStack: "system", overlayBlur: "small" });
 
 /** Connect the wallet straight to the network picked in the header, not always the first one. */
 function RainbowKit({ children }: { children: ReactNode }) {
   const { net } = useNetwork();
   return (
-    <RainbowKitProvider initialChain={net.chain} locale="en-US" theme={theme} appInfo={{ appName: "Aevum Starter Kit" }}>
+    <RainbowKitProvider initialChain={net.chain} locale="en-US" theme={theme} appInfo={{ appName: "SpendLeash" }}>
       {children}
     </RainbowKitProvider>
   );

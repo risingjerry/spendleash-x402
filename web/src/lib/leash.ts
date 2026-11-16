@@ -3,7 +3,7 @@
 import { getLogsChunked } from "@aevum-kit/aevum";
 import { spendLeashAbi } from "@spendleash/sdk";
 import { useQuery } from "@tanstack/react-query";
-import { getAbiItem, type Address, type Hash, type Hex, type PublicClient } from "viem";
+import { decodeEventLog, getAbiItem, type AbiEvent, pad, toEventSelector, type Address, type Hash, type Hex, type PublicClient } from "viem";
 import { useAccount, usePublicClient } from "wagmi";
 import { useNetwork } from "./network";
 
@@ -50,14 +50,24 @@ export function spentTodayNow(s: SessionView, lastPaymentDay: number | undefined
 }
 
 const POLL_MS = 5_000;
+const EXPLORER_API = "https://explorer-test.qday.info/api";
+
+interface ExplorerLog {
+  topics: (Hex | null)[];
+  data: Hex;
+  blockNumber: string;
+  timeStamp: string;
+  transactionHash: Hash;
+}
 
 /**
  * Everything the owner console shows: the owner's sessions (from SessionOpened logs + live state),
  * and every Paid event for them. Polls over HTTPS (Aevum has no WebSocket RPC).
  */
-export function useOwnerLeash() {
+export function useOwnerLeash(owner?: Address) {
   const { net } = useNetwork();
-  const { address } = useAccount();
+  const { address: connected } = useAccount();
+  const address = owner ?? connected;
   const client = usePublicClient({ chainId: net.chain.id }) as PublicClient | undefined;
   const leash = net.leash;
 
@@ -68,13 +78,35 @@ export function useOwnerLeash() {
     queryFn: async () => {
       const head = await client!.getBlockNumber();
       const from = net.leashDeployBlock ?? (head > 20_000n ? head - 20_000n : 0n);
-      const opened = await getLogsChunked(client!, {
-        address: leash!,
-        event: getAbiItem({ abi: spendLeashAbi, name: "SessionOpened" }),
-        args: { owner: address },
-        fromBlock: from,
-        toBlock: head,
-      });
+      const known = new Map<bigint, number>();
+
+      /**
+       * Aevum testnet: ask the explorer's indexed getLogs (filtered by topic, with timestamps) instead of
+       * scanning every block over RPC; Aevum makes ~86k blocks a day. Local chains: chunked RPC scan.
+       */
+      async function logs(name: "SessionOpened" | "Paid", owner?: Address) {
+        const event = getAbiItem({ abi: spendLeashAbi, name }) as AbiEvent;
+        if (net.hasExplorer) {
+          const topic0 = toEventSelector(event);
+          const q = new URLSearchParams({ module: "logs", action: "getLogs", address: leash!, fromBlock: from.toString(), toBlock: "latest", topic0 });
+          if (owner) {
+            q.set("topic2", pad(owner.toLowerCase() as Hex));
+            q.set("topic0_2_opr", "and");
+          }
+          const res = await fetch(`${EXPLORER_API}?${q}`);
+          const body = (await res.json()) as { status: string; result: ExplorerLog[] | null };
+          return (body.result ?? []).map((l) => {
+            const block = BigInt(l.blockNumber);
+            known.set(block, Number(l.timeStamp));
+            const d = decodeEventLog({ abi: [event], topics: l.topics.filter(Boolean) as [Hex, ...Hex[]], data: l.data });
+            return { args: d.args as Record<string, unknown>, blockNumber: block, transactionHash: l.transactionHash };
+          });
+        }
+        const raw = await getLogsChunked(client!, { address: leash!, event, args: owner ? { owner } : undefined, fromBlock: from, toBlock: head });
+        return raw.map((l) => ({ args: l.args as Record<string, unknown>, blockNumber: l.blockNumber!, transactionHash: l.transactionHash! }));
+      }
+
+      const opened = await logs("SessionOpened", address);
       const ids = opened.map((l) => l.args.sessionId as Hex);
       const states = ids.length
         ? await client!.multicall({
@@ -82,14 +114,7 @@ export function useOwnerLeash() {
             allowFailure: false,
           })
         : [];
-      const paid = ids.length
-        ? await getLogsChunked(client!, {
-            address: leash!,
-            event: getAbiItem({ abi: spendLeashAbi, name: "Paid" }),
-            fromBlock: from,
-            toBlock: head,
-          })
-        : [];
+      const paid = ids.length ? await logs("Paid") : [];
       const mine = new Set(ids);
       const payments: PaymentView[] = paid
         .filter((l) => mine.has(l.args.sessionId as Hex))
@@ -99,14 +124,14 @@ export function useOwnerLeash() {
           agent: l.args.agent as Address,
           amount: l.args.amount as bigint,
           ref: l.args.ref as Hex,
-          block: l.blockNumber!,
-          tx: l.transactionHash!,
+          block: l.blockNumber,
+          tx: l.transactionHash,
         }))
         .reverse();
 
       // Block timestamps for the feed and for the daily-cap display.
-      const blocks = [...new Set(payments.map((p) => p.block))].slice(0, 60);
-      const times = new Map<bigint, number>();
+      const times = new Map<bigint, number>(known);
+      const blocks = [...new Set(payments.map((p) => p.block))].filter((b) => !times.has(b)).slice(0, 60);
       await Promise.all(
         blocks.map(async (b) => {
           const blk = await client!.getBlock({ blockNumber: b });
